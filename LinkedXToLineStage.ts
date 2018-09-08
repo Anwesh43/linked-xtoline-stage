@@ -51,3 +51,22 @@ class State {
         }
     }
 }
+
+class Animator {
+    interval : number
+    animated : boolean = false
+
+    start(cb : Function) {
+        if (!this.animated) {
+            this.animated = true
+            this.interval = setInterval(cb, 50)
+        }
+    }
+
+    stop() {
+        if (this.animated) {
+            this.animated = false
+            clearInterval(this.interval)
+        }
+    }
+}
