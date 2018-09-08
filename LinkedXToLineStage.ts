@@ -3,6 +3,8 @@ class LinkedXToLineStage {
 
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
+    linkedXTL : LinkedXTL = new LinkedXTL()
+    animator : Animator = new Animator()
 
     initCanvas() {
         this.canvas.width = w
@@ -14,11 +16,18 @@ class LinkedXToLineStage {
     render() {
         this.context.fillStyle = '#212121'
         this.context.fillRect(0, 0, w, h)
+        this.linkedXTL.draw(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-
+            this.linkedXTL.startUpdating(() => {
+                this.animator.start(() => {
+                    this.linkedXTL.update(() => {
+                        this.animator.stop()
+                    })
+                })
+            })
         }
     }
 
