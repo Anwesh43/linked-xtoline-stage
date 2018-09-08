@@ -23,6 +23,7 @@ class LinkedXToLineStage {
         this.canvas.onmousedown = () => {
             this.linkedXTL.startUpdating(() => {
                 this.animator.start(() => {
+                    this.render()
                     this.linkedXTL.update(() => {
                         this.animator.stop()
                     })
@@ -33,6 +34,7 @@ class LinkedXToLineStage {
 
     static init() {
         const stage = new LinkedXToLineStage()
+        stage.initCanvas()
         stage.render()
         stage.handleTap()
     }
@@ -107,13 +109,17 @@ class XTLNode {
         context.translate(this.i * gap + gap, h/2 - (h/2 - size) * sc2)
         for(var i = 0; i < 2; i++) {
             context.save()
-            context.rotate(Math.PI/6 * (1 - 2 * i) * sc1)
+            context.rotate(Math.PI/4 * (1 - 2 * i) * (1 - sc1))
+            context.beginPath()
             context.moveTo(0, -size/2)
             context.lineTo(0, size/2)
             context.stroke()
             context.restore()
         }
         context.restore()
+        if (this.next) {
+            this.next.draw(context)
+        }
     }
 
     update(cb : Function) {
@@ -138,11 +144,12 @@ class XTLNode {
 }
 
 class LinkedXTL {
-    curr : XTLNode = new XTLNode(0)
+    root : XTLNode = new XTLNode(0)
+    curr : XTLNode = this.root
     dir : number = 1
 
     draw(context : CanvasRenderingContext2D) {
-        this.curr.draw(context)
+        this.root.draw(context)
     }
 
     update(cb : Function) {
