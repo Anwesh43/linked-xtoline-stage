@@ -70,3 +70,60 @@ class Animator {
         }
     }
 }
+
+class XTLNode {
+    state : State = new State()
+    prev : XTLNode
+    next : XTLNode
+    constructor(private i : number) {
+        this.addNeighbor()
+    }
+
+    addNeighbor() {
+        if (this.i < nodes - 1) {
+            this.next = new XTLNode(this.i + 1)
+            this.next.prev = this
+        }
+    }
+
+    draw(context : CanvasRenderingContext2D) {
+        const sc1 : number = Math.min(0.5, this.state.scale) * 2
+        const sc2 : number = Math.min(0.5, Math.max(this.state.scale - 0.5, 0)) * 2
+        const gap = w / (nodes + 1)
+        const size = gap/2
+        context.lineWidth = Math.min(w, h) / 50
+        context.lineCap = 'round'
+        context.strokeStyle = 'white'
+        context.save()
+        context.translate(this.i * gap + gap, h/2 - (h/2 - size) * sc2)
+        for(var i = 0; i < 2; i++) {
+            context.save()
+            context.rotate(Math.PI/6 * (1 - 2 * i) * sc1)
+            context.moveTo(0, -size/2)
+            context.lineTo(0, size/2)
+            context.stroke()
+            context.restore()
+        }
+        context.restore()
+    }
+
+    update(cb : Function) {
+        this.state.update(cb)
+    }
+
+    startUpdating(cb : Function) {
+        this.state.startUpdating(cb)
+    }
+
+    getNext(dir : number, cb : Function) : XTLNode {
+        var curr : XTLNode = this.prev
+        if (dir == 1) {
+            curr = this.next
+        }
+        if (curr) {
+            return curr
+        }
+        cb()
+        return this
+    }
+}
